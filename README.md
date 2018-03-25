@@ -8,4 +8,6 @@ This is already available in Spotlight as a Quick Look Preview Extension (select
 
 ## Installation
 
-TODO
+```sh
+$ brew cask install josh-/qlscpt/qlscpt
+```
