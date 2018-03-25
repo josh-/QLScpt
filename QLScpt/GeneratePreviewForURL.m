@@ -1,23 +1,20 @@
-#include <CoreFoundation/CoreFoundation.h>
-#include <CoreServices/CoreServices.h>
-#include <QuickLook/QuickLook.h>
+@import QuickLook;
+@import OSAKit;
 
-OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview, CFURLRef url, CFStringRef contentTypeUTI, CFDictionaryRef options);
-void CancelPreviewGeneration(void *thisInterface, QLPreviewRequestRef preview);
+OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview, CFURLRef url, CFStringRef contentTypeUTI, CFDictionaryRef options) {
+    NSDictionary *scriptErrorInfo;
+    OSAScript *script = [[OSAScript alloc] initWithContentsOfURL:(__bridge NSURL *)url error:&scriptErrorInfo];
+    if (scriptErrorInfo) {
+        return noErr;
+    }
 
-/* -----------------------------------------------------------------------------
-   Generate a preview for file
+    NSAttributedString *richTextSource = script.richTextSource;
+    NSData *richTextDataRepresentation = [richTextSource RTFFromRange:NSMakeRange(0, richTextSource.length) documentAttributes:@{}];
 
-   This function's job is to create preview for designated file
-   ----------------------------------------------------------------------------- */
-
-OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview, CFURLRef url, CFStringRef contentTypeUTI, CFDictionaryRef options)
-{
-    // To complete your generator please implement the function GeneratePreviewForURL in GeneratePreviewForURL.c
+    QLPreviewRequestSetDataRepresentation(preview, (__bridge CFDataRef)richTextDataRepresentation, kUTTypeRTF, NULL);
     return noErr;
 }
 
-void CancelPreviewGeneration(void *thisInterface, QLPreviewRequestRef preview)
-{
+void CancelPreviewGeneration(void *thisInterface, QLPreviewRequestRef preview) {
     // Implement only if supported
 }
